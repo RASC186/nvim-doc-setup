@@ -1,0 +1,352 @@
+---@diagnostic disable: lowercase-global, unused-local
+--------------------------------------------------------------------------------
+
+require("keymaps")
+require("autocmds")
+
+--------------------------------------------------------------------------------
+
+-- Comment
+
+comment_config = function(plugin, opts)
+  comment_keymaps(plugin, opts)
+  require(plugin.main).setup(opts)
+end
+
+--------------------------------------------------------------------------------
+
+-- Autopairs
+
+nvim_autopairs_config = function(plugin, opts)
+  nvim_autopairs_keymaps(plugin, opts)
+  require(plugin.main).setup(opts)
+end
+
+--------------------------------------------------------------------------------
+
+-- Pencil
+
+vim_pencil_config = function(plugin, opts)
+  vim_pencil_keymaps(plugin, opts)
+  vim_pencil_autocmds(plugin, opts)
+  vim.g["pencil#textwidth"] = 79
+  vim.g["pencil#cursorwrap"] = 1
+  vim.g["pencil#conceallevel"] = 0
+  vim.g["pencil#autoformat"] = 0
+  vim.g["pencil#joinspace"] = 0
+end
+
+--------------------------------------------------------------------------------
+
+-- luasnip
+
+luasnip_config = function(plugin, opts)
+  require("luasnip/loaders/from_vscode").lazy_load()
+  luasnip_keymaps(plugin, opts)
+  local luasnip = require(plugin.main)
+  local types = require(plugin.main .. ".util.types")
+  luasnip.config.set_config = {
+    history = true,
+    updateevents = "TextChanged,TextChangedI",
+    enable_autosnippets = true,
+    ext_opts = {
+      [types.choiceNode] = {
+        active = {
+          virt_text = { { "<-", "Error" } },
+        },
+      },
+    },
+  }
+end
+
+--------------------------------------------------------------------------------
+
+-- cmp-vimtex
+
+cmp_vimtex_config = function(plugin, opts)
+  cmp_vimtex_keymaps(plugin, opts)
+  require(plugin.main).setup()
+end
+
+--------------------------------------------------------------------------------
+
+-- vimtex
+
+vimtex_config = function(plugin, opts)
+  vim.g.vimtex_view_method = "zathura_simple"
+  vim.g.vimtex_syntax_enabled = 0
+  vim.g.vimtex_quickfix_mode = 1
+  vim.g.vimtex_mappings_enabled = 1
+  vim.g.vimtex_indent_enabled = 1
+  vim.g.tex_flavor = "latex"
+  vim.g.tex_indent_items = 1
+  vim.g.tex_indent_brace = 1
+  vim.g.vimtex_context_pdf_viewer = "okular"
+  vim.g.rvimtex_log_ignore = {
+    "Underfull",
+    "Overfull",
+    "specifier changed to",
+    "Token not allowed in a PDF string",
+  }
+end
+
+--------------------------------------------------------------------------------
+
+-- markdown-preview
+
+markdown_preview_config = function(plugin, opts)
+  vim.g.mkdp_auto_start = 0
+  vim.g.mkdp_auto_close = 1
+  vim.g.mkdp_refresh_slow = 0
+  vim.g.mkdp_command_for_global = 0
+  vim.g.mkdp_open_to_the_world = 0
+  vim.g.mkdp_open_ip = ""
+  vim.g.mkdp_browser = ""
+  vim.g.mkdp_echo_preview_url = 0
+  vim.g.mkdp_browserfunc = ""
+  vim.g.mkdp_preview_options = {
+    mkit = {},
+    katex = {},
+    uml = {},
+    maid = {},
+    disable_sync_scroll = 0,
+    sync_scroll_type = "middle",
+    hide_yaml_meta = 1,
+    sequence_diagrams = {},
+    flowchart_diagrams = {},
+    content_editable = false,
+    disable_filename = 0,
+    toc = {},
+  }
+  vim.g.mkdp_markdown_css = ""
+  vim.g.mkdp_highlight_css = ""
+  vim.g.mkdp_port = ""
+  vim.g.mkdp_page_title = "「${name}」"
+  vim.g.mkdp_images_path = "/home/user/.markdown_images"
+  vim.g.mkdp_filetypes = { "markdown" }
+  vim.g.mkdp_theme = "dark"
+  vim.g.mkdp_combine_preview = 0
+  vim.g.mkdp_combine_preview_auto_refresh = 1
+  vim.fn["mkdp#util#install"]()
+end
+
+--------------------------------------------------------------------------------
+
+-- nvim-cmp
+
+nvim_cmp_config = function(plugin, opts)
+  nvim_cmp_keymaps(plugin, opts)
+  require(plugin.main).setup(opts)
+end
+
+--------------------------------------------------------------------------------
+
+-- conform
+
+conform_config = function(plugin, opts)
+  conform_keymaps(plugin, opts)
+  conform_autocmds(plugin, opts)
+  local conform = require(plugin.main)
+  conform.setup(opts)
+end
+
+--------------------------------------------------------------------------------
+
+-- Git
+
+gitsigns_config = function(plugin, opts)
+  gitsigns_keymaps(plugin, opts)
+  require(plugin.main).setup(opts)
+end
+
+--------------------------------------------------------------------------------
+
+-- nvim-lint
+
+nvim_lint_config = function(plugin, opts)
+  nvim_lint_keymaps(plugin, opts)
+  nvim_lint_autocmds(plugin, opts)
+  local lint = require(plugin.main)
+  lint.linters_by_ft = {
+    latex = { "vale" },
+    markdown = { "vale", "write-good", "misspell" },
+  }
+end
+
+--------------------------------------------------------------------------------
+
+-- lspconfig
+
+lspconfig_config = function(plugin, opts)
+  lspconfig_keymaps(plugin, opts)
+
+  local lspconfig = require("lspconfig")
+  local cmp_nvim_lsp = require("cmp_nvim_lsp")
+
+  local capabilities = cmp_nvim_lsp.default_capabilities()
+
+  local on_attach = function(_, bufnr)
+    local options = { noremap = true, silent = false, buffer = bufnr }
+    vim.keymap.set("n", "<A-a>", ":lua vim.lsp.buf.code_action()<CR>", options)
+    vim.keymap.set("n", "<A-k>", ":lua vim.lsp.buf.hover()<CR>", options)
+    vim.keymap.set("n", "<A-d>", ":lua vim.lsp.buf.definition()<CR>", options)
+    vim.keymap.set("n", "<A-D>", ":lua vim.lsp.buf.declaration()<CR>", options)
+    vim.keymap.set("n", "<A-i>", ":lua vim.lsp.buf.implementation()<CR>", options)
+    vim.keymap.set("n", "<A-r>", ":lua vim.lsp.buf.rename()<CR>", options)
+    vim.keymap.set("n", "<A-CR>", vim.diagnostic.open_float, options)
+    vim.diagnostic.config({ virtual_text = false, underline = true })
+  end
+
+  local signs = { Error = "󰅙 ", Warn = " ", Hint = "󰠠 ", Info = "󰋗 " }
+
+  for type, icon in pairs(signs) do
+    local hl = "DiagnosticSign" .. type
+    vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
+  end
+
+  lspconfig["ltex"].setup({
+    capabilities = capabilities,
+    on_attach = on_attach,
+    root_dir = function()
+      return vim.fn.stdpath("data") .. "/mason/packages/ltex-ls/ltex-ls-16.0.0/bin"
+    end,
+  })
+end
+
+--------------------------------------------------------------------------------
+
+-- lspsaga
+
+lspsaga_config = function(plugin, opts)
+  lspsaga_keymaps(plugin, opts)
+end
+
+--------------------------------------------------------------------------------
+
+-- mason-lspconfig
+
+mason_lspconfig_config = function(plugin, opts)
+  mason_lspconfig_keymaps(plugin, opts)
+  require(plugin.main).setup(opts)
+end
+
+--------------------------------------------------------------------------------
+
+-- mason
+
+mason_config = function(plugin, opts)
+  mason_keymaps(plugin, opts)
+  require(plugin.main).setup(opts)
+end
+
+--------------------------------------------------------------------------------
+
+-- nvim-treesitter
+
+nvim_treesitter_config = function(plugin, opts)
+  nvim_treesitter_keymaps(plugin, opts)
+  nvim_treesitter_autocmds(plugin, opts)
+  require(plugin.main .. ".configs").setup(opts)
+end
+
+--------------------------------------------------------------------------------
+
+-- illuminate
+
+illuminate_config = function(plugin, opts)
+  illuminate_keymaps(plugin, opts)
+  require(plugin.main).configure(opts)
+end
+
+--------------------------------------------------------------------------------
+
+-- telescope
+
+telescope_config = function(plugin, opts)
+  telescope_keymaps(plugin, opts)
+  require(plugin.main).setup(opts)
+end
+
+--------------------------------------------------------------------------------
+
+-- zen-mode
+
+zen_mode_config = function(plugin, opts)
+  zen_mode_keymaps(plugin, opts)
+  require(plugin.main).setup(opts)
+end
+
+--------------------------------------------------------------------------------
+
+-- lspkind
+
+lspkind_config = function(plugin, opts)
+  lspkind_keymaps(plugin, opts)
+  require(plugin.main).init(opts)
+end
+
+--------------------------------------------------------------------------------
+
+-- lualine
+
+lualine_config = function(plugin, opts)
+  lualine_keymaps(plugin, opts)
+  require(plugin.main).setup(opts)
+end
+
+--------------------------------------------------------------------------------
+
+-- nvim-tree
+
+nvim_tree_config = function(plugin, opts)
+  nvim_tree_keymaps(plugin, opts)
+  require(plugin.main).setup(opts)
+end
+
+--------------------------------------------------------------------------------
+
+-- nvim-web-devicons
+
+nvim_web_devicons_config = function(plugin, opts)
+  nvim_web_devicons_keymaps(plugin, opts)
+  require(plugin.main).setup(opts)
+end
+
+--------------------------------------------------------------------------------
+
+-- catppuccin
+
+catppuccin_config = function(plugin, opts)
+  catppuccin_keymaps(plugin, opts)
+  require(plugin.main).setup(opts)
+  vim.cmd([[colorscheme catppuccin]])
+end
+
+--------------------------------------------------------------------------------
+
+-- neoconf
+
+neoconf_config = function(plugin, opts)
+  neoconf_keymaps(plugin, opts)
+  require(plugin.main).setup(opts)
+end
+
+--------------------------------------------------------------------------------
+
+-- neodev
+
+neodev_config = function(plugin, opts)
+  neoconf_keymaps(plugin, opts)
+  local neodev = require(plugin.main)
+  neodev.setup(opts)
+end
+
+--------------------------------------------------------------------------------
+
+-- plenary
+
+plenary_config = function(plugin, opts)
+  plenary_keymaps(plugin, opts)
+end
+
+--------------------------------------------------------------------------------
