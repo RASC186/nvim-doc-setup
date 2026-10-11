@@ -4,7 +4,7 @@ This project contains scripts and configuration files to install and configure N
 
 ## Prerequisites
 
-This project installs all pre-requisites automatically (superuser credentials necessary).
+This project installs all prerequisites automatically (superuser credentials necessary).
 
 ## Instructions
 
