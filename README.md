@@ -8,7 +8,7 @@ This project installs all prerequisites automatically (superuser credentials nec
 
 ## Instructions
 
-To install Neovim and set it up for desktop software development, run 
+To install Neovim and set it up for documentation writing, run 
 
 ```
 ./install
