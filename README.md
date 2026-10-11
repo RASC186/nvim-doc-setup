@@ -2,7 +2,7 @@
 
 This project contains scripts and configuration files to install and configure Neovim for documentation writing.
 
-## Pre-requisites
+## Prerequisites
 
 This project installs all pre-requisites automatically (superuser credentials necessary).
 
